@@ -116,6 +116,11 @@ namespace Fanart
         {
             var obj = _jsonSerializer.DeserializeFromFile<FanartArtistResponse>(path);
 
+            if (obj == null)
+            {
+                return;
+            }
+
             PopulateImages(list, obj.artistbackground, ImageType.Backdrop, 1920, 1080);
             PopulateImages(list, obj.artistthumb, ImageType.Primary, 500, 281);
             PopulateImages(list, obj.hdmusiclogo, ImageType.Logo, 800, 310);
