@@ -1,0 +1,4 @@
+{
+    "LabelFanartApiKey": "Cl\u00e9 d'API personnelle :",
+    "LabelFanartApiKeyHelp": "Les requ\u00eates de fanart sans cl\u00e9 d'API personnelle renvoient des r\u00e9sultats approuv\u00e9s il y a plus de 7 jours. Avec une cl\u00e9 d'API personnelle,  cette valeur descend \u00e0 48 heures, et si vous \u00eates aussi membre fanart VIP, cette valeur descendra encore plus, \u00e0 environ 10 minutes."
+}

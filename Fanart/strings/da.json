@@ -1,0 +1,4 @@
+{
+    "LabelFanartApiKey": "Personlig api n\u00f8gle:",
+    "LabelFanartApiKeyHelp": "Foresp\u00f8rgsler til fanart uden en personlig api n\u00f8gle returnerer resultater godkendt for over 7 dage siden. Med en personlig api n\u00f8gle falder dette til 48 timer, og hvis du er fanart VIP-medlem falder dette yderligere til omkring 10 minutter."
+}

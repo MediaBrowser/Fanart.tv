@@ -1,0 +1,4 @@
+{
+    "LabelFanartApiKey": "Henkil\u00f6kohtainen API-avain:",
+    "LabelFanartApiKeyHelp": "Pyynn\u00f6t Fanart-palveluun ilman henkil\u00f6kohtaista API-avainta antaa p\u00e4\u00e4syn tietoihin jotka on hyv\u00e4ksytty 7 p\u00e4iv\u00e4\u00e4 sitten. Henkil\u00f6kohtaisella API-avaimella se putoaa 48 tuntiin. Jos olet VIP-j\u00e4sen, se muuttuu noin 10 minuutiksi."
+}

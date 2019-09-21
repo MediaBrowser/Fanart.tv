@@ -1,0 +1,4 @@
+{
+    "LabelFanartApiKey": "Clave api personal:",
+    "LabelFanartApiKeyHelp": "Solicitar fanart sin una clave API personal muestra los imagenes que fueron aprobadas hace 7 d\u00edas. Con una clave API personal se reduce a 48 horas y si eres miembro VIP de fanart ser\u00e1 alrededor de 10 minutos."
+}

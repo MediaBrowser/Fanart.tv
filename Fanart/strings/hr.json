@@ -1,0 +1,4 @@
+{
+    "LabelFanartApiKey": "Osobni api klju\u010d:",
+    "LabelFanartApiKeyHelp": "Zahtjev za fanart bez osobnog API klju\u010d za povratak slika koje su odobrene prije vi\u0161e od sedam dana. Uz osobni API klju\u010d to se spu\u0161ta do 48 sati, a ako ste i VIP \u010dlan fanart-a to \u0107e jo\u0161 dodatno pasti na oko 10 minuta."
+}
