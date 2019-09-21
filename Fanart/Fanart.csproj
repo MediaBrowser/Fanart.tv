@@ -1,26 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;</TargetFrameworks>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Configuration\fanart.html" />
     <None Remove="Configuration\fanart.js" />
+    <None Remove="strings\en-US.json" />
     <None Remove="thumb.png" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Configuration\fanart.html" />
     <EmbeddedResource Include="Configuration\fanart.js" />
+    <EmbeddedResource Include="strings\en-US.json" />
     <EmbeddedResource Include="thumb.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="mediabrowser.server.core" Version="4.2.0.4-beta" />
-    <PackageReference Include="System.Memory" Version="4.5.2" />
+    <PackageReference Include="mediabrowser.server.core" Version="4.3.0.10-beta" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
   </ItemGroup>
 
 </Project>

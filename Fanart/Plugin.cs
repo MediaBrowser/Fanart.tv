@@ -23,7 +23,7 @@ namespace Fanart
     /// <summary>
     /// Class Plugin
     /// </summary>
-    public class Plugin : BasePlugin, IHasWebPages, IHasThumbImage
+    public class Plugin : BasePlugin, IHasWebPages, IHasThumbImage, IHasTranslations
     {
         /// <summary>
         /// Gets the name of the plugin
@@ -66,6 +66,22 @@ namespace Fanart
                     EmbeddedResourcePath = GetType().Namespace + ".Configuration.fanart.js"
                 }
             };
+        }
+
+        public TranslationInfo[] GetTranslations()
+        {
+            var basePath = GetType().Namespace + ".strings.";
+
+            return GetType()
+                .Assembly
+                .GetManifestResourceNames()
+                .Where(i => i.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
+                .Select(i => new TranslationInfo
+                {
+                    Locale = Path.GetFileNameWithoutExtension(i.Substring(basePath.Length)),
+                    EmbeddedResourcePath = i
+
+                }).ToArray();
         }
 
         public Stream GetThumbImage()
