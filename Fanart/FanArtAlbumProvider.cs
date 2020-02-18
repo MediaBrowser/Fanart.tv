@@ -80,7 +80,7 @@ namespace Fanart
 
                 try
                 {
-                    AddImages(list, artistJsonPath, musicBrainzId, musicBrainzReleaseGroupId, cancellationToken);
+                    await AddImages(list, artistJsonPath, musicBrainzId, musicBrainzReleaseGroupId, cancellationToken).ConfigureAwait(false);
                 }
                 catch (FileNotFoundException)
                 {
@@ -103,9 +103,9 @@ namespace Fanart
         /// <param name="releaseId">The release identifier.</param>
         /// <param name="releaseGroupId">The release group identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        private void AddImages(List<RemoteImageInfo> list, string path, string releaseId, string releaseGroupId, CancellationToken cancellationToken)
+        private async Task AddImages(List<RemoteImageInfo> list, string path, string releaseId, string releaseGroupId, CancellationToken cancellationToken)
         {
-            var obj = _jsonSerializer.DeserializeFromFile<FanartArtistProvider.FanartArtistResponse>(path);
+            var obj = await _jsonSerializer.DeserializeFromFileAsync<FanartArtistProvider.FanartArtistResponse>(path).ConfigureAwait(false);
 
             if (obj.albums != null)
             {

@@ -91,7 +91,7 @@ namespace Fanart
 
                 try
                 {
-                    AddImages(list, artistJsonPath, cancellationToken);
+                    await AddImages(list, artistJsonPath, cancellationToken).ConfigureAwait(false);
                 }
                 catch (FileNotFoundException)
                 {
@@ -112,9 +112,9 @@ namespace Fanart
         /// <param name="list">The list.</param>
         /// <param name="path">The path.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        private void AddImages(List<RemoteImageInfo> list, string path, CancellationToken cancellationToken)
+        private async Task AddImages(List<RemoteImageInfo> list, string path, CancellationToken cancellationToken)
         {
-            var obj = _jsonSerializer.DeserializeFromFile<FanartArtistResponse>(path);
+            var obj = await _jsonSerializer.DeserializeFromFileAsync<FanartArtistResponse>(path).ConfigureAwait(false);
 
             if (obj == null)
             {

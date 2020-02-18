@@ -96,7 +96,7 @@ namespace Fanart
 
                     try
                     {
-                        AddImages(list, season.IndexNumber.Value, path, cancellationToken);
+                        await AddImages(list, season.IndexNumber.Value, path, cancellationToken).ConfigureAwait(false);
                     }
                     catch (FileNotFoundException)
                     {
@@ -112,9 +112,9 @@ namespace Fanart
             return list;
         }
 
-        private void AddImages(List<RemoteImageInfo> list, int seasonNumber, string path, CancellationToken cancellationToken)
+        private async Task AddImages(List<RemoteImageInfo> list, int seasonNumber, string path, CancellationToken cancellationToken)
         {
-            var root = _json.DeserializeFromFile<FanartSeriesProvider.RootObject>(path);
+            var root = await _json.DeserializeFromFileAsync<FanartSeriesProvider.RootObject>(path).ConfigureAwait(false);
 
             AddImages(list, root, seasonNumber, cancellationToken);
         }
