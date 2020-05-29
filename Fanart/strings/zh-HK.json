@@ -1,4 +1,4 @@
 {
-    "LabelFanartApiKey": "\u500b\u4eba API \u9396\u5319\uff1a",
-    "LabelFanartApiKeyHelp": "Requests to fanart without a personal API key return images that were approved over 7 days ago. With a personal API key that drops to 48 hours and if you are also a fanart VIP member that will further drop to around 10 minutes."
+    "LabelFanartApiKey": "\u500b\u4eba API \u5bc6\u9470\uff1a",
+    "LabelFanartApiKeyHelp": "\u5f9e fanart \u7372\u53d6\u5716\u7247\u6642\u5982\u679c\u6c92\u6709\u8a2d\u7f6e\u500b\u4ebaAPI \u5bc6\u9470\uff0c\u6700\u65b0\u53ea\u80fd\u53d6\u5f977\u65e5\u524d\u6279\u51c6\u7684\u5716\u7247; \u6709\u500b\u4ebaAPI\u9396\u5319\u5247\u6703\u7f29\u77ed\u81f348\u5c0f\u6642; \u5982\u679c\u4f60\u662f fanart VIP \u6703\u54e1\u5247\u6703\u7f29\u77ed\u81f310\u5206\u9418\u5de6\u53f3\u3002"
 }
