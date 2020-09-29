@@ -123,7 +123,10 @@ namespace Fanart
         {
             var root = await _json.DeserializeFromFileAsync<RootObject>(path).ConfigureAwait(false);
 
-            AddImages(list, root, cancellationToken);
+            if (root != null)
+            {
+                AddImages(list, root, cancellationToken);
+            }
         }
 
         private void AddImages(List<RemoteImageInfo> list, RootObject obj, CancellationToken cancellationToken)

@@ -107,14 +107,17 @@ namespace Fanart
         {
             var obj = await _jsonSerializer.DeserializeFromFileAsync<FanartArtistProvider.FanartArtistResponse>(path).ConfigureAwait(false);
 
-            if (obj.albums != null)
+            if (obj != null)
             {
-                var album = obj.albums.FirstOrDefault(i => string.Equals(i.release_group_id, releaseGroupId, StringComparison.OrdinalIgnoreCase));
-
-                if (album != null)
+                if (obj.albums != null)
                 {
-                    PopulateImages(list, album.albumcover, ImageType.Primary, 1000, 1000);
-                    PopulateImages(list, album.cdart, ImageType.Disc, 1000, 1000);
+                    var album = obj.albums.FirstOrDefault(i => string.Equals(i.release_group_id, releaseGroupId, StringComparison.OrdinalIgnoreCase));
+
+                    if (album != null)
+                    {
+                        PopulateImages(list, album.albumcover, ImageType.Primary, 1000, 1000);
+                        PopulateImages(list, album.cdart, ImageType.Disc, 1000, 1000);
+                    }
                 }
             }
         }
