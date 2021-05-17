@@ -1,4 +1,4 @@
 {
     "LabelFanartApiKey": "Chave da api pessoal:",
-    "LabelFanartApiKeyHelp": "Requests to fanart without a personal API key return images that were approved over 7 days ago. With a personal API key that drops to 48 hours and if you are also a fanart VIP member that will further drop to around 10 minutes."
+    "LabelFanartApiKeyHelp": "As solicita\u00e7\u00f5es de fanart sem uma chave de API pessoal retornam imagens que foram aprovadas h\u00e1 mais de 7 dias. Com uma chave API pessoal reduz para 48 horas e se tamb\u00e9m for um membro fanart VIP que reduz ainda mais para cerca de 10 minutos."
 }

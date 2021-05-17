@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;</TargetFrameworks>
-    <AssemblyVersion>1.0.12.0</AssemblyVersion>
-    <FileVersion>1.0.12.0</FileVersion>
+    <AssemblyVersion>1.0.13.0</AssemblyVersion>
+    <FileVersion>1.0.13.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -44,6 +44,7 @@
     <None Remove="strings\tr.json" />
     <None Remove="strings\zh-CN.json" />
     <None Remove="strings\zh-HK.json" />
+    <None Remove="strings\zh-TW.json" />
     <None Remove="thumb.png" />
   </ItemGroup>
 
@@ -85,6 +86,7 @@
     <EmbeddedResource Include="strings\tr.json" />
     <EmbeddedResource Include="strings\zh-CN.json" />
     <EmbeddedResource Include="strings\zh-HK.json" />
+    <EmbeddedResource Include="strings\zh-TW.json" />
     <EmbeddedResource Include="thumb.png" />
   </ItemGroup>
 
