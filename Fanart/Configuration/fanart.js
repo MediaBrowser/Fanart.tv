@@ -1,4 +1,4 @@
-﻿define(['loading', 'emby-input', 'emby-button'], function (loading) {
+﻿define(['baseView', 'loading', 'emby-input', 'emby-button', 'emby-scroller'], function (BaseView, loading) {
     'use strict';
 
     function loadPage(page, config) {
@@ -27,21 +27,28 @@
         return false;
     }
 
-    return function (view, params) {
+    function View(view, params) {
+        BaseView.apply(this, arguments);
 
         view.querySelector('form').addEventListener('submit', onSubmit);
+    }
 
-        view.addEventListener('viewshow', function () {
+    Object.assign(View.prototype, BaseView.prototype);
 
-            loading.show();
+    View.prototype.onResume = function (options) {
 
-            var page = this;
+        BaseView.prototype.onResume.apply(this, arguments);
 
-            ApiClient.getNamedConfiguration("fanart").then(function (response) {
+        loading.show();
 
-                loadPage(page, response);
-            });
+        var page = this.view;
+
+        ApiClient.getNamedConfiguration("fanart").then(function (response) {
+
+            loadPage(page, response);
         });
     };
+
+    return View;
 
 });
