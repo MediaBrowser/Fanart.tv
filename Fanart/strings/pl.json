@@ -1,4 +1,4 @@
 {
     "LabelFanartApiKey": "Osobisty klucz API:",
-    "LabelFanartApiKeyHelp": "\u017b\u0105dania fototapet, bez osobistego klucza API, zwr\u00f3c\u0105 obrazy, kt\u00f3re by\u0142y zatwierdzone 7 dni temu. Z osobistym kluczem API warto\u015b\u0107 spada do 48 godzin, a je\u017celi jeste\u015b cz\u0142onkiem VIP fototapety warto\u015b\u0107 ta spadnie do oko\u0142o 10 minut."
+    "LabelFanartApiKeyHelp": "\u017b\u0105dania fototapet bez osobistego klucza API zwr\u00f3c\u0105 obrazy, kt\u00f3re zosta\u0142y zatwierdzone 7 dni temu. Z osobistym kluczem API czas ten spada do 48 godzin, a je\u017celi jeste\u015b cz\u0142onkiem VIP, czas ten wynosi oko\u0142o 10 minut."
 }

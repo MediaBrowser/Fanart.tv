@@ -22,7 +22,6 @@ using MediaBrowser.Model.Configuration;
 using MediaBrowser.Controller.IO;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Controller.LiveTv;
-using MediaBrowser.Model.Extensions;
 
 namespace Fanart
 {

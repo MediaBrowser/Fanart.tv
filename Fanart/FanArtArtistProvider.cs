@@ -21,7 +21,6 @@ using MediaBrowser.Controller.IO;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Serialization;
-using MediaBrowser.Model.Extensions;
 
 namespace Fanart
 {
