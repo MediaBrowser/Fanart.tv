@@ -1,4 +1,4 @@
 {
-    "LabelFanartApiKey": "Pers\u00f6nlicher API-Schl\u00fcssel:",
+    "LabelFanartApiKey": "Pers\u00f6nlicher API-Schl\u00fcssel",
     "LabelFanartApiKeyHelp": "Anfragen nach Fanart ohne pers\u00f6nlichen API-Schl\u00fcssel liefern Bilder der letzten sieben Tage. Mit einem pers\u00f6nlichen API-Schl\u00fcssel werden Bilder der letzten 48 Stunden, und als VIP-Mitglied der letzten zehn Minuten geliefert."
 }
