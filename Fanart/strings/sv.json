@@ -1,4 +1,4 @@
 {
-    "LabelFanartApiKey": "Personlig api-nyckel:",
-    "LabelFanartApiKeyHelp": "Beg\u00e4ran av fanart utan en personlig API-nyckel ger tillg\u00e5ng till filer som godk\u00e4nts f\u00f6r \u00f6ver 7 dagar sedan. Med en personlig API-nyckel \u00e4ndras det till 48 timmar. Om du \u00e4ven \u00e4r VIP-medlem \u00e4ndras det ytterligare till cirka 10 minuter."
+  "LabelFanartApiKey": "Personlig api-nyckel",
+  "LabelFanartApiKeyHelp": "Begäran av fanart utan en personlig API-nyckel ger tillgång till filer som godkänts för över 7 dagar sedan. Med en personlig API-nyckel ändras det till 48 timmar. Om du även är VIP-medlem ändras det ytterligare till cirka 10 minuter."
 }

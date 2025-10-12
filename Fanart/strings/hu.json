@@ -1,4 +1,4 @@
 {
-    "LabelFanartApiKey": "Szem\u00e9lyes API kulcs:",
-    "LabelFanartApiKeyHelp": "Szem\u00e9lyes API kulcs n\u00e9lk\u00fcli fanart ir\u00e1nti ig\u00e9nyl\u00e9s eset\u00e9n kiz\u00e1r\u00f3lag 7 napon t\u00fal elfogadott k\u00e9peket kapunk eredm\u00e9ny\u00fcl. Szem\u00e9lyes API kulccsal ez 48 \u00f3r\u00e1ra cs\u00f6kken illetve amennyiben \u00d6n egy fanart VIP tag is, akkor ez 10 perc k\u00f6r\u00fclire cs\u00f6kken."
+  "LabelFanartApiKey": "Személyes API kulcs",
+  "LabelFanartApiKeyHelp": "Személyes API kulcs nélküli fanart iránti igénylés esetén kizárólag 7 napon túl elfogadott képeket kapunk eredményül. Személyes API kulccsal ez 48 órára csökken illetve amennyiben Ön egy fanart VIP tag is, akkor ez 10 perc körülire csökken."
 }
