@@ -148,7 +148,7 @@ namespace Fanart
                         Width = width,
                         Height = height,
                         ProviderName = Name,
-                        Url = url.Replace("http://", "https://", StringComparison.OrdinalIgnoreCase),
+                        Url = FanartMovieImageProvider.NormalizeImageUrl(url, "music"),
                         Language = FanartMovieImageProvider.NormalizeLanguage(i.lang)
                     };
 

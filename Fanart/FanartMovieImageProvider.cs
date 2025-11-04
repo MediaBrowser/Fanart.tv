@@ -67,7 +67,7 @@ namespace Fanart
         {
             return new List<ImageType>
             {
-                ImageType.Primary, 
+                ImageType.Primary,
                 ImageType.Thumb,
                 ImageType.Art,
                 ImageType.Logo,
@@ -141,6 +141,18 @@ namespace Fanart
             PopulateImages(list, obj.moviebackground, ImageType.Backdrop, 1920, 1080);
         }
 
+        public static string NormalizeImageUrl(string url, string fanartType)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return null;
+            }
+
+            url = url.Replace("http://", "https://", StringComparison.OrdinalIgnoreCase);
+
+            return url;
+        }
+
         private void PopulateImages(List<RemoteImageInfo> list, List<Image> images, ImageType type, int width, int height)
         {
             if (images == null)
@@ -164,7 +176,7 @@ namespace Fanart
                         Width = width,
                         Height = height,
                         ProviderName = Name,
-                        Url = url,
+                        Url = NormalizeImageUrl(url, "movies"),
                         Language = NormalizeLanguage(i.lang)
                     };
 
@@ -260,7 +272,7 @@ namespace Fanart
 
             var path = GetFanartJsonPath(id);
 
-			_fileSystem.CreateDirectory(_fileSystem.GetDirectoryName(path));
+            _fileSystem.CreateDirectory(_fileSystem.GetDirectoryName(path));
 
             try
             {
