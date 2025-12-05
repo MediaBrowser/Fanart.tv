@@ -22,15 +22,14 @@ using System.Threading.Tasks;
 
 using MediaBrowser.Controller.IO;
 using MediaBrowser.Model.IO;
+using static Fanart.FanartArtistProvider;
 
 namespace Fanart
 {
     public class FanartSeriesProvider : IRemoteImageProvider, IHasOrder
     {
-        private readonly CultureInfo _usCulture = new CultureInfo("en-US");
         private readonly IServerConfigurationManager _config;
         private readonly IHttpClient _httpClient;
-        private readonly IFileSystem _fileSystem;
         private readonly IJsonSerializer _json;
 
         private const string FanArtBaseUrl = "https://webservice.fanart.tv/v3/tv/{1}?api_key={0}";
@@ -38,11 +37,12 @@ namespace Fanart
 
         internal static FanartSeriesProvider Current { get; private set; }
 
+        public static TimeSpan CacheLength = TimeSpan.FromHours(12);
+
         public FanartSeriesProvider(IServerConfigurationManager config, IHttpClient httpClient, IFileSystem fileSystem, IJsonSerializer json)
         {
             _config = config;
             _httpClient = httpClient;
-            _fileSystem = fileSystem;
             _json = json;
 
             Current = this;
@@ -67,7 +67,7 @@ namespace Fanart
         {
             return new List<ImageType>
             {
-                ImageType.Primary, 
+                ImageType.Primary,
                 ImageType.Thumb,
                 ImageType.Art,
                 ImageType.Logo,
@@ -89,7 +89,12 @@ namespace Fanart
                 // Bad id entered
                 try
                 {
-                    await EnsureSeriesJson(id, cancellationToken).ConfigureAwait(false);
+                    var root = await EnsureSeriesJson(id, cancellationToken).ConfigureAwait(false);
+
+                    if (root != null)
+                    {
+                        AddImages(list, root, cancellationToken);
+                    }
                 }
                 catch (HttpException ex)
                 {
@@ -98,34 +103,9 @@ namespace Fanart
                         throw;
                     }
                 }
-
-                var path = GetFanartJsonPath(id);
-
-                try
-                {
-                    await AddImages(list, path, cancellationToken).ConfigureAwait(false);
-                }
-                catch (FileNotFoundException)
-                {
-                    // No biggie. Don't blow up
-                }
-                catch (IOException)
-                {
-                    // No biggie. Don't blow up
-                }
             }
 
             return list;
-        }
-
-        private async Task AddImages(List<RemoteImageInfo> list, string path, CancellationToken cancellationToken)
-        {
-            var root = await _json.DeserializeFromFileAsync<RootObject>(path).ConfigureAwait(false);
-
-            if (root != null)
-            {
-                AddImages(list, root, cancellationToken);
-            }
         }
 
         private void AddImages(List<RemoteImageInfo> list, RootObject obj, CancellationToken cancellationToken)
@@ -177,7 +157,7 @@ namespace Fanart
                         Language = FanartMovieImageProvider.NormalizeLanguage(i.lang)
                     };
 
-                    if (!string.IsNullOrEmpty(likesString) && int.TryParse(likesString, NumberStyles.Integer, _usCulture, out likes))
+                    if (!string.IsNullOrEmpty(likesString) && int.TryParse(likesString, NumberStyles.Integer, CultureInfo.InvariantCulture, out likes))
                     {
                         info.CommunityRating = likes;
                     }
@@ -203,58 +183,15 @@ namespace Fanart
             });
         }
 
-        /// <summary>
-        /// Gets the series data path.
-        /// </summary>
-        /// <param name="appPaths">The app paths.</param>
-        /// <param name="seriesId">The series id.</param>
-        /// <returns>System.String.</returns>
-        internal static string GetSeriesDataPath(IApplicationPaths appPaths, string seriesId)
-        {
-            var seriesDataPath = Path.Combine(GetSeriesDataPath(appPaths), seriesId);
-
-            return seriesDataPath;
-        }
-
-        /// <summary>
-        /// Gets the series data path.
-        /// </summary>
-        /// <param name="appPaths">The app paths.</param>
-        /// <returns>System.String.</returns>
-        internal static string GetSeriesDataPath(IApplicationPaths appPaths)
-        {
-            var dataPath = Path.Combine(appPaths.CachePath, "fanart-tv");
-
-            return dataPath;
-        }
-
-        public string GetFanartJsonPath(string tvdbId)
-        {
-            var dataPath = GetSeriesDataPath(_config.ApplicationPaths, tvdbId);
-            return Path.Combine(dataPath, "fanart.json");
-        }
-
         private readonly SemaphoreSlim _ensureSemaphore = new SemaphoreSlim(1, 1);
-        internal async Task EnsureSeriesJson(string tvdbId, CancellationToken cancellationToken)
+        internal async Task<FanartSeriesProvider.RootObject> EnsureSeriesJson(string tvdbId, CancellationToken cancellationToken)
         {
-            var path = GetFanartJsonPath(tvdbId);
-
             // Only allow one thread in here at a time since every season will be calling this method, possibly concurrently
             await _ensureSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
-                var fileInfo = _fileSystem.GetFileSystemInfo(path);
-
-                if (fileInfo.Exists)
-                {
-                    if ((DateTimeOffset.UtcNow - _fileSystem.GetLastWriteTimeUtc(fileInfo)).TotalDays <= 2)
-                    {
-                        return;
-                    }
-                }
-
-                await DownloadSeriesJson(tvdbId, cancellationToken).ConfigureAwait(false);
+                return await DownloadSeriesJson(tvdbId, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -273,7 +210,7 @@ namespace Fanart
         /// <param name="tvdbId">The TVDB identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task.</returns>
-        internal async Task DownloadSeriesJson(string tvdbId, CancellationToken cancellationToken)
+        internal async Task<FanartSeriesProvider.RootObject> DownloadSeriesJson(string tvdbId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -285,40 +222,20 @@ namespace Fanart
                 url += "&client_key=" + clientKey;
             }
 
-            var path = GetFanartJsonPath(tvdbId);
-
-			_fileSystem.CreateDirectory(_fileSystem.GetDirectoryName(path));
-
-            try
+            using (var httpResponse = await _httpClient.SendAsync(new HttpRequestOptions
             {
-                using (var httpResponse = await _httpClient.SendAsync(new HttpRequestOptions
-                {
-                    Url = url,
-                    CancellationToken = cancellationToken,
-                    BufferContent = true
+                Url = url,
+                CancellationToken = cancellationToken,
+                BufferContent = true,
+                CacheLength = CacheLength,
+                CacheMode = CacheMode.Unconditional
 
-                }, "GET").ConfigureAwait(false))
-                {
-                    using (var response = httpResponse.Content)
-                    {
-                        using (var fileStream = _fileSystem.GetFileStream(path, FileOpenMode.Create, FileAccessMode.Write, FileShareMode.Read, true))
-                        {
-                            await response.CopyToAsync(fileStream).ConfigureAwait(false);
-                        }
-                    }
-                }
-            }
-            catch (HttpException exception)
+            }, "GET").ConfigureAwait(false))
             {
-                if (exception.StatusCode.HasValue && exception.StatusCode.Value == HttpStatusCode.NotFound)
+                using (var response = httpResponse.Content)
                 {
-                    // If the user has automatic updates enabled, save a dummy object to prevent repeated download attempts
-                    _json.SerializeToFile(new RootObject(), path);
-
-                    return;
+                    return await _json.DeserializeFromStreamAsync<FanartSeriesProvider.RootObject>(response).ConfigureAwait(false);
                 }
-
-                throw;
             }
         }
 

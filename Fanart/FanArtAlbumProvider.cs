@@ -18,19 +18,18 @@ using MediaBrowser.Model.Configuration;
 using MediaBrowser.Controller.IO;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Serialization;
+using MediaBrowser.Model.Net;
+using System.Net;
 
 namespace Fanart
 {
     public class FanartAlbumProvider : IRemoteImageProvider, IHasOrder
     {
-        private readonly CultureInfo _usCulture = new CultureInfo("en-US");
-        private readonly IServerConfigurationManager _config;
         private readonly IHttpClient _httpClient;
         private readonly IJsonSerializer _jsonSerializer;
 
-        public FanartAlbumProvider(IServerConfigurationManager config, IHttpClient httpClient, IJsonSerializer jsonSerializer)
+        public FanartAlbumProvider(IHttpClient httpClient, IJsonSerializer jsonSerializer)
         {
-            _config = config;
             _httpClient = httpClient;
             _jsonSerializer = jsonSerializer;
         }
@@ -54,7 +53,7 @@ namespace Fanart
         {
             return new List<ImageType>
             {
-                ImageType.Primary, 
+                ImageType.Primary,
                 ImageType.Disc
             };
         }
@@ -67,25 +66,23 @@ namespace Fanart
 
             if (!string.IsNullOrEmpty(artistMusicBrainzId))
             {
-                await FanartArtistProvider.Current.EnsureArtistJson(artistMusicBrainzId, cancellationToken).ConfigureAwait(false);
-
-                var artistJsonPath = FanartArtistProvider.GetArtistJsonPath(_config.CommonApplicationPaths, artistMusicBrainzId);
-
-                var musicBrainzReleaseGroupId = item.GetProviderId(MetadataProviders.MusicBrainzReleaseGroup);
-
-                var musicBrainzId = item.GetProviderId(MetadataProviders.MusicBrainzAlbum);
-
                 try
                 {
-                    await AddImages(list, artistJsonPath, musicBrainzId, musicBrainzReleaseGroupId, cancellationToken).ConfigureAwait(false);
-                }
-                catch (FileNotFoundException)
-                {
+                    var root = await FanartArtistProvider.Current.EnsureArtistJson(artistMusicBrainzId, cancellationToken).ConfigureAwait(false);
 
-                }
-                catch (IOException)
-                {
+                    if (root != null)
+                    {
+                        var musicBrainzReleaseGroupId = item.GetProviderId(MetadataProviders.MusicBrainzReleaseGroup);
 
+                        AddImages(list, root, musicBrainzReleaseGroupId, cancellationToken);
+                    }
+                }
+                catch (HttpException ex)
+                {
+                    if (!ex.StatusCode.HasValue || ex.StatusCode.Value != HttpStatusCode.NotFound)
+                    {
+                        throw;
+                    }
                 }
             }
 
@@ -95,15 +92,8 @@ namespace Fanart
         /// <summary>
         /// Adds the images.
         /// </summary>
-        /// <param name="list">The list.</param>
-        /// <param name="path">The path.</param>
-        /// <param name="releaseId">The release identifier.</param>
-        /// <param name="releaseGroupId">The release group identifier.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        private async Task AddImages(List<RemoteImageInfo> list, string path, string releaseId, string releaseGroupId, CancellationToken cancellationToken)
+        private void AddImages(List<RemoteImageInfo> list, FanartArtistProvider.FanartArtistResponse obj, string releaseGroupId, CancellationToken cancellationToken)
         {
-            var obj = await _jsonSerializer.DeserializeFromFileAsync<FanartArtistProvider.FanartArtistResponse>(path).ConfigureAwait(false);
-
             if (obj != null)
             {
                 if (obj.albums != null)
@@ -150,7 +140,7 @@ namespace Fanart
                         Language = FanartMovieImageProvider.NormalizeLanguage(i.lang)
                     };
 
-                    if (!string.IsNullOrEmpty(likesString) && int.TryParse(likesString, NumberStyles.Integer, _usCulture, out likes))
+                    if (!string.IsNullOrEmpty(likesString) && int.TryParse(likesString, NumberStyles.Integer, CultureInfo.InvariantCulture, out likes))
                     {
                         info.CommunityRating = likes;
                     }

@@ -27,10 +27,7 @@ namespace Fanart
 {
     public class FanartMovieImageProvider : IRemoteImageProvider, IHasOrder
     {
-        private readonly CultureInfo _usCulture = new CultureInfo("en-US");
-        private readonly IServerConfigurationManager _config;
         private readonly IHttpClient _httpClient;
-        private readonly IFileSystem _fileSystem;
         private readonly IJsonSerializer _json;
 
         private const string FanArtBaseUrl = "https://webservice.fanart.tv/v3/movies/{1}?api_key={0}";
@@ -38,11 +35,9 @@ namespace Fanart
 
         internal static FanartMovieImageProvider Current;
 
-        public FanartMovieImageProvider(IServerConfigurationManager config, IHttpClient httpClient, IFileSystem fileSystem, IJsonSerializer json)
+        public FanartMovieImageProvider(IHttpClient httpClient, IJsonSerializer json)
         {
-            _config = config;
             _httpClient = httpClient;
-            _fileSystem = fileSystem;
             _json = json;
 
             Current = this;
@@ -89,7 +84,13 @@ namespace Fanart
                 // Bad id entered
                 try
                 {
-                    await EnsureMovieJson(movieId, cancellationToken).ConfigureAwait(false);
+                    var root = await EnsureMovieJson(movieId, cancellationToken).ConfigureAwait(false); 
+                    
+                    if (root != null)
+                    {
+                        AddImages(list, root, cancellationToken);
+                    }
+
                 }
                 catch (HttpException ex)
                 {
@@ -98,34 +99,9 @@ namespace Fanart
                         throw;
                     }
                 }
-
-                var path = GetFanartJsonPath(movieId);
-
-                try
-                {
-                    await AddImages(list, path, cancellationToken).ConfigureAwait(false);
-                }
-                catch (FileNotFoundException)
-                {
-                    // No biggie. Don't blow up
-                }
-                catch (IOException)
-                {
-                    // No biggie. Don't blow up
-                }
             }
 
             return list;
-        }
-
-        private async Task AddImages(List<RemoteImageInfo> list, string path, CancellationToken cancellationToken)
-        {
-            var root = await _json.DeserializeFromFileAsync<RootObject>(path).ConfigureAwait(false);
-
-            if (root != null)
-            {
-                AddImages(list, root, cancellationToken);
-            }
         }
 
         private void AddImages(List<RemoteImageInfo> list, RootObject obj, CancellationToken cancellationToken)
@@ -180,7 +156,7 @@ namespace Fanart
                         Language = NormalizeLanguage(i.lang)
                     };
 
-                    if (!string.IsNullOrEmpty(likesString) && int.TryParse(likesString, NumberStyles.Integer, _usCulture, out likes))
+                    if (!string.IsNullOrEmpty(likesString) && int.TryParse(likesString, NumberStyles.Integer, CultureInfo.InvariantCulture, out likes))
                     {
                         info.CommunityRating = likes;
                     }
@@ -222,43 +198,12 @@ namespace Fanart
         }
 
         /// <summary>
-        /// Gets the movie data path.
-        /// </summary>
-        /// <param name="appPaths">The application paths.</param>
-        /// <param name="id">The identifier.</param>
-        /// <returns>System.String.</returns>
-        internal static string GetMovieDataPath(IApplicationPaths appPaths, string id)
-        {
-            var dataPath = Path.Combine(GetMoviesDataPath(appPaths), id);
-
-            return dataPath;
-        }
-
-        /// <summary>
-        /// Gets the movie data path.
-        /// </summary>
-        /// <param name="appPaths">The app paths.</param>
-        /// <returns>System.String.</returns>
-        internal static string GetMoviesDataPath(IApplicationPaths appPaths)
-        {
-            var dataPath = Path.Combine(appPaths.CachePath, "fanart-movies");
-
-            return dataPath;
-        }
-
-        public string GetFanartJsonPath(string id)
-        {
-            var movieDataPath = GetMovieDataPath(_config.ApplicationPaths, id);
-            return Path.Combine(movieDataPath, "fanart.json");
-        }
-
-        /// <summary>
         /// Downloads the movie json.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task.</returns>
-        internal async Task DownloadMovieJson(string id, CancellationToken cancellationToken)
+        private async Task<RootObject> DownloadMovieJson(string id, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -270,57 +215,25 @@ namespace Fanart
                 url += "&client_key=" + clientKey;
             }
 
-            var path = GetFanartJsonPath(id);
-
-            _fileSystem.CreateDirectory(_fileSystem.GetDirectoryName(path));
-
-            try
+            using (var httpResponse = await _httpClient.SendAsync(new HttpRequestOptions
             {
-                using (var httpResponse = await _httpClient.SendAsync(new HttpRequestOptions
-                {
-                    Url = url,
-                    CancellationToken = cancellationToken,
-                    BufferContent = true
+                Url = url,
+                CancellationToken = cancellationToken,
+                BufferContent = true,
+                CacheLength = FanartSeriesProvider.CacheLength,
+                CacheMode = CacheMode.Unconditional
 
-                }, "GET").ConfigureAwait(false))
-                {
-                    using (var response = httpResponse.Content)
-                    {
-                        using (var fileStream = _fileSystem.GetFileStream(path, FileOpenMode.Create, FileAccessMode.Write, FileShareMode.Read, true))
-                        {
-                            await response.CopyToAsync(fileStream).ConfigureAwait(false);
-                        }
-                    }
-                }
-            }
-            catch (HttpException exception)
+            }, "GET").ConfigureAwait(false))
             {
-                if (exception.StatusCode.HasValue && exception.StatusCode.Value == HttpStatusCode.NotFound)
+                using (var response = httpResponse.Content)
                 {
-                    // If the user has automatic updates enabled, save a dummy object to prevent repeated download attempts
-                    _json.SerializeToFile(new RootObject(), path);
-
-                    return;
+                    return await _json.DeserializeFromStreamAsync<RootObject>(response).ConfigureAwait(false);
                 }
-
-                throw;
             }
         }
 
-        internal Task EnsureMovieJson(string id, CancellationToken cancellationToken)
+        internal Task<RootObject> EnsureMovieJson(string id, CancellationToken cancellationToken)
         {
-            var path = GetFanartJsonPath(id);
-
-            var fileInfo = _fileSystem.GetFileSystemInfo(path);
-
-            if (fileInfo.Exists)
-            {
-                if ((DateTimeOffset.UtcNow - _fileSystem.GetLastWriteTimeUtc(fileInfo)).TotalDays <= 2)
-                {
-                    return Task.CompletedTask;
-                }
-            }
-
             return DownloadMovieJson(id, cancellationToken);
         }
 

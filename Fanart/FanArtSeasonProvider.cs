@@ -25,16 +25,11 @@ namespace Fanart
 {
     public class FanArtSeasonProvider : IRemoteImageProvider, IHasOrder
     {
-        private readonly CultureInfo _usCulture = new CultureInfo("en-US");
-        private readonly IServerConfigurationManager _config;
         private readonly IHttpClient _httpClient;
-        private readonly IJsonSerializer _json;
 
-        public FanArtSeasonProvider(IServerConfigurationManager config, IHttpClient httpClient, IJsonSerializer json)
+        public FanArtSeasonProvider(IHttpClient httpClient)
         {
-            _config = config;
             _httpClient = httpClient;
-            _json = json;
         }
 
         public string Name
@@ -79,7 +74,12 @@ namespace Fanart
                     // Bad id entered
                     try
                     {
-                        await FanartSeriesProvider.Current.EnsureSeriesJson(id, cancellationToken).ConfigureAwait(false);
+                        var seriesImages = await FanartSeriesProvider.Current.EnsureSeriesJson(id, cancellationToken).ConfigureAwait(false);
+
+                        if (seriesImages != null)
+                        {
+                            AddImages(list, seriesImages, season.IndexNumber.Value, cancellationToken);
+                        }
                     }
                     catch (HttpException ex)
                     {
@@ -88,35 +88,10 @@ namespace Fanart
                             throw;
                         }
                     }
-
-                    var path = FanartSeriesProvider.Current.GetFanartJsonPath(id);
-
-                    try
-                    {
-                        await AddImages(list, season.IndexNumber.Value, path, cancellationToken).ConfigureAwait(false);
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        // No biggie. Don't blow up
-                    }
-                    catch (IOException)
-                    {
-                        // No biggie. Don't blow up
-                    }
                 }
             }
 
             return list;
-        }
-
-        private async Task AddImages(List<RemoteImageInfo> list, int seasonNumber, string path, CancellationToken cancellationToken)
-        {
-            var root = await _json.DeserializeFromFileAsync<FanartSeriesProvider.RootObject>(path).ConfigureAwait(false);
-
-            if (root != null)
-            {
-                AddImages(list, root, seasonNumber, cancellationToken);
-            }
         }
 
         private void AddImages(List<RemoteImageInfo> list, FanartSeriesProvider.RootObject obj, int seasonNumber, CancellationToken cancellationToken)
@@ -148,7 +123,7 @@ namespace Fanart
 
                 if (!string.IsNullOrEmpty(url) &&
                     !string.IsNullOrEmpty(season) &&
-                    int.TryParse(season, NumberStyles.Integer, _usCulture, out imageSeasonNumber) &&
+                    int.TryParse(season, NumberStyles.Integer, CultureInfo.InvariantCulture, out imageSeasonNumber) &&
                     seasonNumber == imageSeasonNumber)
                 {
                     var likesString = i.likes;
@@ -165,7 +140,7 @@ namespace Fanart
                         Language = FanartMovieImageProvider.NormalizeLanguage(i.lang)
                     };
 
-                    if (!string.IsNullOrEmpty(likesString) && int.TryParse(likesString, NumberStyles.Integer, _usCulture, out likes))
+                    if (!string.IsNullOrEmpty(likesString) && int.TryParse(likesString, NumberStyles.Integer, CultureInfo.InvariantCulture, out likes))
                     {
                         info.CommunityRating = likes;
                     }
