@@ -26,14 +26,12 @@ namespace Fanart
         private readonly CultureInfo _usCulture = new CultureInfo("en-US");
         private readonly IServerConfigurationManager _config;
         private readonly IHttpClient _httpClient;
-        private readonly IFileSystem _fileSystem;
         private readonly IJsonSerializer _jsonSerializer;
 
-        public FanartAlbumProvider(IServerConfigurationManager config, IHttpClient httpClient, IFileSystem fileSystem, IJsonSerializer jsonSerializer)
+        public FanartAlbumProvider(IServerConfigurationManager config, IHttpClient httpClient, IJsonSerializer jsonSerializer)
         {
             _config = config;
             _httpClient = httpClient;
-            _fileSystem = fileSystem;
             _jsonSerializer = jsonSerializer;
         }
 
