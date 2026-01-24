@@ -1,4 +1,4 @@
 {
-  "LabelFanartApiKey": "Clé d'API personnelle :",
+  "LabelFanartApiKey": "Clé d'API personnelle",
   "LabelFanartApiKeyHelp": "Les requêtes de fanart sans clé d'API personnelle renvoient des résultats approuvés il y a plus de 7 jours. Avec une clé d'API personnelle, cette valeur descend à 48 heures, et si vous êtes aussi membre fanart VIP, cette valeur descendra encore plus, à environ 10 minutes."
 }
