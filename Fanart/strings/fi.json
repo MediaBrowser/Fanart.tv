@@ -1,4 +1,4 @@
 {
-    "LabelFanartApiKey": "Henkil\u00f6kohtainen API-avain:",
-    "LabelFanartApiKeyHelp": "Ilman henkil\u00f6kohtaista API-avainta haut palauttavat kuvia, jotka on hyv\u00e4ksytty yli 7 p\u00e4iv\u00e4\u00e4 sitten. Henkil\u00f6kohtaisella API-avaimella t\u00e4m\u00e4 rajoitus on 48 tuntia. Maksullinen Fanart.tv VIP-j\u00e4senyys laskee t\u00e4m\u00e4n vain noin 10 minuuttiin."
+  "LabelFanartApiKey": "Henkilökohtainen API-avain",
+  "LabelFanartApiKeyHelp": "Ilman henkilökohtaista API-avainta haut palauttavat kuvia, jotka on hyväksytty yli 7 päivää sitten. Henkilökohtaisella API-avaimella tämä rajoitus on 48 tuntia ja jos olet maksullisen Fanart.tv VIP-jäsenyyden tilaaja, on rajoitus noin 10 minuuttia."
 }
