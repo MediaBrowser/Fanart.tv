@@ -1,4 +1,4 @@
 {
-    "LabelFanartApiKey": "Asmeninis api raktas",
-    "LabelFanartApiKeyHelp": "Fan\u0173 meno u\u017eklausos be asmeninio API rakto pateiks paveikslus, kurie buvo patvirtinti seniau nei prie\u0161 7 dienas. Su asmeniniu API raktu \u0161is laikas suma\u017e\u0117ja iki 48 valand\u0173, o jei esate fan\u0173 meno VIP narys, \u0161is laikas dar suma\u017e\u0117s iki ma\u017edaug 10 minu\u010di\u0173."
+  "LabelFanartApiKey": "Asmeninis API raktas",
+  "LabelFanartApiKeyHelp": "Fanų meno užklausos be asmeninio API rakto pateiks atvaizdus, kurie buvo patvirtinti seniau nei prieš 7 dienas. Su asmeniniu API raktu šis laikas sumažėja iki 48 valandų, o jei esate fanų meno VIP narys, šis laikas dar sumažės iki maždaug 10 minučių."
 }

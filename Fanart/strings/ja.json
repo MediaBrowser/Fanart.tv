@@ -1,4 +1,4 @@
 {
-  "LabelFanartApiKey": "パーソナル API キー",
+  "LabelFanartApiKey": "個人用APIキー",
   "LabelFanartApiKeyHelp": "個人用APIキーなしでfanartにリクエストすると、7日以上前に承認された画像のみ返されます。個人用APIキーを使用すると48時間に短縮され、さらにfanart VIPメンバーの場合は約10分に短縮されます。"
 }
